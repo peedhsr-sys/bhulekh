@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>भूलेख सेवा पोर्टल | UP Land Records</title>
+<meta name="description" content="UP भूलेख, खसरा-खतौनी, भू-नक्शा व राजस्व सेवाओं का अनौपचारिक launcher पोर्टल">
+<meta name="theme-color" content="#0b5ed7">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans Devanagari','Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293b}
+  header{background:linear-gradient(135deg,#0a58ca,#0d6efd);color:#fff;padding:18px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header .logo{width:46px;height:46px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+  header h1{font-size:1.25rem;line-height:1.3}
+  header small{display:block;font-weight:400;opacity:.9;font-size:.75rem}
+  #installBtn{margin-left:auto;background:#ffd43b;color:#1e293b;border:0;padding:9px 16px;border-radius:999px;font-weight:700;cursor:pointer;font-size:.85rem}
+  .disclaimer{background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c;padding:10px 16px;font-size:.8rem;line-height:1.5}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  #search{width:100%;padding:12px 16px;border:2px solid #cbd5e1;border-radius:12px;font-size:1rem;margin-bottom:16px;outline:none}
+  #search:focus{border-color:#0d6efd}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:8px;border:1px solid #e2e8f0}
+  .card .icon{font-size:30px}
+  .card h3{font-size:1rem;color:#0a58ca}
+  .card p{font-size:.8rem;color:#64748b;flex:1;line-height:1.5}
+  .card .tag{font-size:.68rem;background:#e7f1ff;color:#0a58ca;padding:3px 8px;border-radius:999px;align-self:flex-start}
+  .btns{display:flex;gap:8px}
+  .btns button{flex:1;padding:9px 6px;border-radius:9px;border:0;cursor:pointer;font-size:.8rem;font-weight:600}
+  .b1{background:#0d6efd;color:#fff}
+  .b2{background:#e7f1ff;color:#0a58ca}
+  .steps{background:#fff;border-radius:14px;padding:16px;margin-top:20px;border:1px solid #e2e8f0;font-size:.85rem;line-height:1.9}
+  .steps h2{font-size:1rem;color:#0a58ca;margin-bottom:8px}
+  footer{text-align:center;padding:20px 16px;font-size:.72rem;color:#64748b;line-height:1.8}
+  footer a{color:#0a58ca}
+  /* Viewer */
+  #viewer{position:fixed;inset:0;background:#fff;z-index:99;display:none;flex-direction:column}
+  #viewer.open{display:flex}
+  .vbar{background:#0a58ca;color:#fff;padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .vbar b{flex:1;font-size:.9rem;min-width:120px}
+  .vbar button{background:#fff;color:#0a58ca;border:0;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:700}
+  .vbar .close{background:#dc3545;color:#fff}
+  #frame{flex:1;border:0;width:100%}
+  .vnote{background:#fff3cd;color:#664d03;padding:8px 12px;font-size:.75rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .vnote button{background:#0d6efd;color:#fff;border:0;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:700}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🗺️</div>
+  <h1>भूलेख सेवा पोर्टल<small>उत्तर प्रदेश भूमि रिकॉर्ड — अनौपचारिक Launcher</small></h1>
+  <button id="installBtn" hidden>📲 ऐप Install करें</button>
+</header>
+
+<div class="disclaimer">
+  ⚠️ <b>महत्वपूर्ण:</b> यह कोई सरकारी वेबसाइट/ऐप नहीं है और न ही सरकार से संबद्ध है। सारा डेटा आधिकारिक पोर्टल
+  <b>upbhulekh.gov.in</b> व अन्य सरकारी साइटों से आता है। अंतिम प्रमाणित जानकारी के लिए आधिकारिक पोर्टल/कार्यालय से सत्यापन करें।
+</div>
+
+<main>
+  <input id="search" type="search" placeholder="🔍 सेवा खोजें... जैसे खतौनी, नक्शा, वाद">
+  <section class="grid" id="grid"></section>
+
+  <section class="steps">
+    <h2>📖 खतौनी देखने का तरीका</h2>
+    1️⃣ "खसरा / खतौनी" कार्ड खोलें → 2️⃣ अपना <b>जनपद</b> चुनें → 3️⃣ <b>तहसील</b> चुनें →
+    4️⃣ <b>ग्राम</b> चुनें → 5️⃣ खाता संख्या / गाटा संख्या / नाम से खोजें → 6️⃣ खतौनी देखें/प्रिंट करें।
+  </section>
+</main>
+
+<footer>
+  स्रोत: <a href="https://upbhulekh.gov.in" target="_blank" rel="noopener">upbhulekh.gov.in</a> •
+  <a href="https://upbhunaksha.gov.in" target="_blank" rel="noopener">upbhunaksha.gov.in</a> •
+  <a href="https://vaad.up.nic.in" target="_blank" rel="noopener">vaad.up.nic.in</a><br>
+  यह पोर्टल केवल सुविधा हेतु बनाया गया अनौपचारिक माध्यम है। कोई सरकारी सेवा/प्रमाणन प्रदान नहीं करता।
+</footer>
+
+<!-- इन-पेज व्यूअर -->
+<div id="viewer">
+  <div class="vbar">
+    <b id="vTitle">सेवा</b>
+    <button id="vReload">⟳ रीलोड</button>
+    <button id="vTab">↗ नई टैब में खोलें</button>
+    <button id="vClose" class="close">✕ बंद</button>
+  </div>
+  <iframe id="frame" title="सरकारी पोर्टल" allow="geolocation; fullscreen"></iframe>
+  <div class="vnote">
+    ℹ️ अगर नीचे खाली/सफेद पेज दिखे तो सरकारी साइट ने embedding block किया है —
+    <button id="vTab2">↗ नई टैब में खोलें</button>
+  </div>
+</div>
+
+<script>
+const SERVICES = [
+  {icon:'📜', name:'खसरा / खतौनी नकल', tag:'भूलेख', desc:'जनपद → तहसील → ग्राम चुनकर गाटा/खाता संख्या या नाम से जमीन का रिकॉर्ड देखें।', url:'https://upbhulekh.gov.in/'},
+  {icon:'🗺️', name:'भू-नक्शा (Bhu Naksha)', tag:'नक्शा', desc:'गाटा/खसरा संख्या से जमीन का नक्शा, सीमा व क्षेत्रफल देखें।', url:'https://upbhunaksha.gov.in/'},
+  {icon:'📝', name:'e-खसरा (Field Book)', tag:'भूलेख', desc:'खसरा फील्ड बुक / फसल व भूमि विवरण की जानकारी।', url:'https://ekhasra.up.gov.in/'},
+  {icon:'⚖️', name:'वाद — राजस्व न्यायालय', tag:'वाद', desc:'राजस्व वाद/केस की स्थिति, आदेश व सुनवाई तिथि देखें।', url:'https://vaad.up.nic.in/'},
+  {icon:'🏛️', name:'RCCMS — केस स्थिति', tag:'वाद', desc:'राजस्व न्यायालय प्रबंधन प्रणाली में केस डैशबोर्ड।', url:'https://rccms.up.gov.in/'},
+  {icon:'🖋️', name:'IGRSUP — रजिस्ट्री / स्टाम्प', tag:'रजिस्ट्री', desc:'संपत्ति पंजीकरण, स्टाम्प शुल्क व रजिस्ट्री संबंधी सेवाएँ।', url:'https://igrsup.gov.in/'},
+  {icon:'📄', name:'eDistrict — प्रमाण पत्र', tag:'प्रमाण पत्र', desc:'जाति/निवास/आय प्रमाण पत्र व खतौनी प्रमाणित नकल हेतु आवेदन स्थिति।', url:'https://edistrict.up.gov.in/'},
+  {icon:'📮', name:'जनसुनवाई — शिकायत', tag:'शिकायत', desc:'भूमि/राजस्व संबंधी शिकायत दर्ज करें व स्थिति देखें।', url:'https://jansunwai.up.nic.in/'}
+];
+
+const grid = document.getElementById('grid');
+function render(list){
+  grid.innerHTML = list.map(s => `
+    <div class="card">
+      <div class="icon">${s.icon}</div>
+      <span class="tag">${s.tag}</span>
+      <h3>${s.name}</h3>
+      <p>${s.desc}</p>
+      <div class="btns">
+        <button class="b1" data-url="${s.url}" data-name="${s.name}">ऐप में खोलें</button>
+        <button class="b2" data-tab="${s.url}">नई टैब ↗</button>
+      </div>
+    </div>`).join('');
+}
+render(SERVICES);
+
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  render(SERVICES.filter(s => (s.name+s.desc+s.tag).toLowerCase().includes(q)));
+});
+
+/* Viewer logic */
+const viewer = document.getElementById('viewer'),
+      frame  = document.getElementById('frame'),
+      vTitle = document.getElementById('vTitle');
+let currentUrl = '';
+
+grid.addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.tab){ window.open(b.dataset.tab, '_blank', 'noopener'); return; }
+  if(b.dataset.url){
+    currentUrl = b.dataset.url;
+    vTitle.textContent = b.dataset.name;
+    frame.src = currentUrl;
+    viewer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+});
+function closeViewer(){
+  viewer.classList.remove('open');
+  frame.src = 'about:blank';
+  document.body.style.overflow = '';
+}
+document.getElementById('vClose').onclick = closeViewer;
+document.getElementById('vReload').onclick = () => frame.src = currentUrl;
+document.getElementById('vTab').onclick  = () => window.open(currentUrl, '_blank', 'noopener');
+document.getElementById('vTab2').onclick = () => window.open(currentUrl, '_blank', 'noopener');
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeViewer(); });
+
+/* PWA Install */
+let deferred = null;
+const installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferred = e; installBtn.hidden = false;
+});
+installBtn.onclick = async () => {
+  if(!deferred) return;
+  deferred.prompt(); await deferred.userChoice;
+  deferred = null; installBtn.hidden = true;
+};
+window.addEventListener('appinstalled', () => installBtn.hidden = true);
+
+/* Service Worker */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

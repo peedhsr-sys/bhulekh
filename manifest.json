@@ -1,0 +1,16 @@
+{
+  "name": "भूलेख सेवा पोर्टल",
+  "short_name": "भूलेख सेवा",
+  "description": "UP भूलेख, खसरा-खतौनी, भू-नक्शा व राजस्व सेवाओं का अनौपचारिक launcher",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0b5ed7",
+  "lang": "hi",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
